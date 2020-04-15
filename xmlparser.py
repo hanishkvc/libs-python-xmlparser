@@ -31,10 +31,9 @@ class XMLParser():
                         bTagMarkerStart = True
                         bTagTypeStart = True
                         iTagMarkerOffset = 0
-                        sCurTag = c
+                        sCurTag = ""
                 elif c == '>':
                     if bTagMarkerStart:
-                        sCurTag += c
                         if bTagTypeStart:
                             handler.tag_start(l, sCurTag)
                         else:
@@ -45,7 +44,6 @@ class XMLParser():
                 elif c == '/':
                     if bTagMarkerStart:
                         bTagTypeStart = False
-                    sCurTag += c
                 else:
                     if bTagMarkerStart:
                         sCurTag += c
@@ -59,7 +57,7 @@ class XMLParserHandler:
         print(errType)
 
     def tag_start(self, sLine, sTag):
-        print(sTag)
+        print("<{}>".format(sTag))
 
     def tag_end(self, sLine, sTag):
         print("</{}>".format(sTag))
