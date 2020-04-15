@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
+# A simple minded stupid xml parser
+# v20200415IST1850, HanishKVC
 
 import sys
 
 
-class XMLParser():
+class XMLParser:
     TAGSTARTMARKERAGAIN = "TagStartMarkerAgain"
     TAGENDMARKERALONE = "TagEndMarkerAlone"
     sFile = None
