@@ -20,6 +20,45 @@ class XMLParser():
         self.hFile = open(sFile)
         self.iTagLvl = 0
 
+    def _process_tag(self, sIn):
+        sTag,sRemain = sIn.split(' ',1)
+        dAttribs = {}
+        sKey = ""
+        sData = ""
+        bKey = True
+        bInString = False
+        for c in sRemain:
+            if c == '"':
+                if bInString:
+                    bInString = False
+                else:
+                    bInString = True
+            elif c == '=':
+                if not bInString:
+                    bKey = False
+            elif str.isspace(c):
+                if bInString:
+                    if bKey:
+                        sKey += c
+                    else:
+                        sData += c
+                else:
+                    if not bKey:
+                        if sKey != "":
+                            dAttribs[sKey] = sData
+                            sKey = ""
+                            sData = ""
+                            bKey = True
+
+            else:
+                if bKey:
+                    sKey += c
+                else:
+                    sData += c
+        if sKey != "":
+            dAttribs[sKey] = sData
+        return sTag, dAttribs
+
     def parse(self, handler):
         bTagMarkerStart = False
         bTagTypeStart = True
@@ -39,12 +78,13 @@ class XMLParser():
                         sCurTag = ""
                 elif c == '>':
                     if bTagMarkerStart:
+                        sTag, dAttribs = self._process_tag(sCurTag)
                         if bTagTypeStart:
-                            handler.tag_start(l, sCurTag, self.iTagLvl)
+                            handler.tag_start(sTag, dAttribs, self.iTagLvl, sCurTag, l)
                             self.iTagLvl += 1
                         if (not bTagTypeStart) or (iTagMarkerOffset == SELFCONTAINEDTAGSPECIALOFFSET):
                             self.iTagLvl -= 1
-                            handler.tag_end(l, sCurTag, self.iTagLvl, sCurData)
+                            handler.tag_end(sTag, dAttribs, self.iTagLvl, sCurData, sCurTag, l)
                         sCurData = ""
                         bTagMarkerStart = False
                     else:
@@ -84,15 +124,17 @@ class XMLParserHandler:
     def error(self, sLine, errType):
         print(errType)
 
-    def tag_start(self, sLine, sTag, iTagLvl):
+    def tag_start(self, sTag, dAttribs, iTagLvl, sRawTag, sLine):
         self._printalign2taglvl(iTagLvl)
-        print("<{}>".format(sTag))
+        print("DBUG:<{}>".format(sRawTag))
+        self._printalign2taglvl(iTagLvl)
+        print("<{} {}>".format(sTag, dAttribs))
 
-    def tag_end(self, sLine, sTag, iTagLvl, sData):
+    def tag_end(self, sTag, dAttribs, iTagLvl, sData, sRawTag, sLine):
         self._printalign2taglvl(iTagLvl)
         print(sData)
         self._printalign2taglvl(iTagLvl)
-        print("</{}>".format(sTag))
+        print("</{}>".format(sRawTag))
 
 
 myParser = XMLParser()
