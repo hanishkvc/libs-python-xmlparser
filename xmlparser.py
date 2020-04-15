@@ -10,6 +10,7 @@ class XMLParser():
     hFile = None
     handler = None
     iTagLvl = 0
+    #iTagId = 0
     def __init__(self):
         self.sFile = None
         self.hFile = None
@@ -24,6 +25,7 @@ class XMLParser():
         bTagTypeStart = True
         iTagMarkerOffset = 0
         sCurTag = None
+        sCurData = ""
         SELFCONTAINEDTAGSPECIALOFFSET=1000
         for l in self.hFile:
             for c in l:
@@ -42,7 +44,8 @@ class XMLParser():
                             self.iTagLvl += 1
                         if (not bTagTypeStart) or (iTagMarkerOffset == SELFCONTAINEDTAGSPECIALOFFSET):
                             self.iTagLvl -= 1
-                            handler.tag_end(l, sCurTag, self.iTagLvl)
+                            handler.tag_end(l, sCurTag, self.iTagLvl, sCurData)
+                            sCurData = ""
                         bTagMarkerStart = False
                     else:
                         handler.error(l, self.TAGENDMARKERALONE)
@@ -59,10 +62,14 @@ class XMLParser():
                             pass
                         else:
                             sCurTag += c
+                    else:
+                        sCurData += c
                 else:
                     if bTagMarkerStart:
                         iTagMarkerOffset += 1
                         sCurTag += c
+                    else:
+                        sCurData += c
 
     def reset(self):
         hFile.seek(0)
@@ -71,7 +78,7 @@ class XMLParser():
 class XMLParserHandler:
     def _printalign2taglvl(self, iTagLvl):
         for i in range(iTagLvl):
-            print("\t", end="")
+            print("--", end="")
         #print("iTagLvl:{}".format(iTagLvl))
 
     def error(self, sLine, errType):
@@ -81,7 +88,9 @@ class XMLParserHandler:
         self._printalign2taglvl(iTagLvl)
         print("<{}>".format(sTag))
 
-    def tag_end(self, sLine, sTag, iTagLvl):
+    def tag_end(self, sLine, sTag, iTagLvl, sData):
+        self._printalign2taglvl(iTagLvl)
+        print(sData)
         self._printalign2taglvl(iTagLvl)
         print("</{}>".format(sTag))
 
