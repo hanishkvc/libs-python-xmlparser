@@ -1,7 +1,11 @@
 #!/usr/bin/env python3
 
+import sys
+
 
 class XMLParser():
+    TAGSTARTMARKERAGAIN = "TagStartMarkerAgain"
+    TAGENDMARKERALONE = "TagEndMarkerAlone"
     sFile = None
     hFile = None
     handler = None
@@ -11,11 +15,9 @@ class XMLParser():
         self.handler = None
 
     def open(self, sFile):
-        hFile = open(sFile)
+        self.hFile = open(sFile)
 
     def parse(self, handler):
-        TAGSTARTMARKERAGAIN = "TagStartMarkerAgain"
-        TAGENDMARKERALONE = "TagEndMarkerAlone"
         bTagMarkerStart = False
         bTagTypeStart = True
         iTagMarkerOffset = 0
@@ -43,18 +45,23 @@ class XMLParser():
                 elif c == '/':
                     if bTagMarkerStart:
                         bTagTypeStart = False
+                    sCurTag += c
+                else:
+                    if bTagMarkerStart:
+                        sCurTag += c
+
 
     def reset(self):
         hFile.seek(0)
 
 class XMLParserHandler:
-    def error(sLine, errType):
+    def error(self, sLine, errType):
         print(errType)
 
-    def tag_start(sLine, sTag)
+    def tag_start(self, sLine, sTag):
         print(sTag)
 
-    def tag_end(sLine, sTag)
+    def tag_end(self, sLine, sTag):
         print("</{}>".format(sTag))
 
 
