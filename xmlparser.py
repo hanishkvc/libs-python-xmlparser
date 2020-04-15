@@ -141,10 +141,10 @@ class XMLParserHandler:
         print("</{}>".format(sRawTag))
 
 
-myParser = XMLParser()
-myHandler = XMLParserHandler()
-myParser.open(sys.argv[1])
-myParser.parse(myHandler)
-
+if __name__ == "__main__":
+    myParser = XMLParser()
+    myHandler = XMLParserHandler()
+    myParser.open(sys.argv[1])
+    myParser.parse(myHandler)
 
 
