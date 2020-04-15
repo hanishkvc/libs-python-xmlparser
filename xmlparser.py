@@ -21,7 +21,11 @@ class XMLParser():
         self.iTagLvl = 0
 
     def _process_tag(self, sIn):
-        sTag,sRemain = sIn.split(' ',1)
+        try:
+            sTag,sRemain = sIn.split(' ',1)
+        except ValueError:
+            sTag = sIn
+            sRemain = ""
         dAttribs = {}
         sKey = ""
         sData = ""
