@@ -41,8 +41,8 @@ class XMLParser():
                             handler.tag_start(l, sCurTag, self.iTagLvl)
                             self.iTagLvl += 1
                         if (not bTagTypeStart) or (iTagMarkerOffset == SELFCONTAINEDTAGSPECIALOFFSET):
-                            handler.tag_end(l, sCurTag, self.iTagLvl)
                             self.iTagLvl -= 1
+                            handler.tag_end(l, sCurTag, self.iTagLvl)
                         bTagMarkerStart = False
                     else:
                         handler.error(l, self.TAGENDMARKERALONE)
