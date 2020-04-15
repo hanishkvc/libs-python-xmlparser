@@ -36,6 +36,8 @@ class XMLParser():
                         sCurTag = ""
                 elif c == '>':
                     if bTagMarkerStart:
+                        if (iTagMarkerOffset == 999):
+                            bTagTypeStart = False
                         if bTagTypeStart:
                             handler.tag_start(l, sCurTag, self.iTagLvl)
                             self.iTagLvl += 1
@@ -46,9 +48,12 @@ class XMLParser():
                     else:
                         handler.error(l, self.TAGENDMARKERALONE)
                 elif c == '/':
-                    if bTagMarkerStart and (iTagMarkerOffset == 0):
-                        print("DBUG:parse:Found /")
-                        bTagTypeStart = False
+                    if bTagMarkerStart:
+                        if (iTagMarkerOffset == 0):
+                            #print("DBUG:parse:Found /")
+                            bTagTypeStart = False
+                        else:
+                            iTagMarkerOffset = 999
                 else:
                     if bTagMarkerStart:
                         iTagMarkerOffset += 1
@@ -62,8 +67,8 @@ class XMLParser():
 class XMLParserHandler:
     def _printalign2taglvl(self, iTagLvl):
         for i in range(iTagLvl):
-            print("-\t-", end="")
-        print("iTagLvl:{}".format(iTagLvl))
+            print("\t", end="")
+        #print("iTagLvl:{}".format(iTagLvl))
 
     def error(self, sLine, errType):
         print(errType)
