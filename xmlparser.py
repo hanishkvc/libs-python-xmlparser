@@ -46,10 +46,12 @@ class XMLParser():
                     else:
                         handler.error(l, self.TAGENDMARKERALONE)
                 elif c == '/':
-                    if bTagMarkerStart:
+                    if bTagMarkerStart and (iTagMarkerOffset == 0):
+                        print("DBUG:parse:Found /")
                         bTagTypeStart = False
                 else:
                     if bTagMarkerStart:
+                        iTagMarkerOffset += 1
                         sCurTag += c
 
 
