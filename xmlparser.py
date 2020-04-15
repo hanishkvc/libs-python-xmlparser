@@ -24,6 +24,7 @@ class XMLParser():
         bTagTypeStart = True
         iTagMarkerOffset = 0
         sCurTag = None
+        SELFCONTAINEDTAGSPECIALOFFSET=1000
         for l in self.hFile:
             for c in l:
                 if c == '<':
@@ -36,12 +37,10 @@ class XMLParser():
                         sCurTag = ""
                 elif c == '>':
                     if bTagMarkerStart:
-                        if (iTagMarkerOffset == 999):
-                            bTagTypeStart = False
                         if bTagTypeStart:
                             handler.tag_start(l, sCurTag, self.iTagLvl)
                             self.iTagLvl += 1
-                        else:
+                        if (not bTagTypeStart) or (iTagMarkerOffset == SELFCONTAINEDTAGSPECIALOFFSET):
                             handler.tag_end(l, sCurTag, self.iTagLvl)
                             self.iTagLvl -= 1
                         bTagMarkerStart = False
@@ -53,12 +52,17 @@ class XMLParser():
                             #print("DBUG:parse:Found /")
                             bTagTypeStart = False
                         else:
-                            iTagMarkerOffset = 999
+                            iTagMarkerOffset = SELFCONTAINEDTAGSPECIALOFFSET
+                elif c == ' ': # Need to check if this is required
+                    if bTagMarkerStart:
+                        if (iTagMarkerOffset == 0) or (iTagMarkerOffset == SELFCONTAINEDTAGSPECIALOFFSET):
+                            pass
+                        else:
+                            sCurTag += c
                 else:
                     if bTagMarkerStart:
                         iTagMarkerOffset += 1
                         sCurTag += c
-
 
     def reset(self):
         hFile.seek(0)
