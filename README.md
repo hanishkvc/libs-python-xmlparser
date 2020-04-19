@@ -11,4 +11,6 @@ cross check what is the best built-in xml parser module in python.
 Also wanted to give a shot at creating a simple xml parser to get
 my job done so created this.
 
+Look at https://github.com/hanishkvc/prgs-health-covid19-analtoolkit
+for a sample usage.
 
